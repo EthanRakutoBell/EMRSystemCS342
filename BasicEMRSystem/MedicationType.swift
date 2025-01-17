@@ -14,7 +14,7 @@ import Foundation
 import SwiftUI
 
 // Utilising CustomStringConvertible to generate a basic description
-struct Medication: CustomStringConvertible {
+struct Medication: CustomStringConvertible, Hashable {
     var description: String {
         return "\(name) - \(datePrescribed) - \(dosage) - \(route) - \(frequency) - \(duration) days"
     }

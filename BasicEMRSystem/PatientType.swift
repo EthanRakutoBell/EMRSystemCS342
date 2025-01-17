@@ -24,7 +24,8 @@ enum MedicationError: Error {
 
 
 
-struct Patient: CustomStringConvertible {
+struct Patient: Identifiable, Hashable, CustomStringConvertible {
+    let id = UUID()
     var description: String {
         return "MRN: \(MRN), First Name: \(firstName), Last Name: \(lastName), DOB: \(DOB), Height: \(height), Weight: \(weight), Blood Type: \(bloodType.typeBlood), Medications: \(medications)"
     }
@@ -46,6 +47,12 @@ struct Patient: CustomStringConvertible {
         self.weight = weight
         self.bloodType = bloodType
         self.medications = medications
+    }
+    
+    func calculateInitials() -> String {
+        let firstInitial = firstName.first?.uppercased() ?? "?"
+        let lastInitial = lastName.first?.uppercased() ?? "?"
+        return "\(firstInitial)\(lastInitial)"
     }
     
     // This function returns basic info (Assignment method #1)

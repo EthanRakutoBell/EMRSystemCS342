@@ -11,7 +11,7 @@ import SwiftUI
 struct BasicEMRSystemApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            PatientListView()
         }
     }
 }

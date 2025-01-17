@@ -12,7 +12,7 @@
 import Foundation
 import SwiftUI
 
-struct BloodType: CustomStringConvertible {
+struct BloodType: CustomStringConvertible, Hashable {
     var description: String { "Blood Type: \(typeBlood)" }
     var typeBlood: String
     

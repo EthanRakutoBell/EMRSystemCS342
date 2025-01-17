@@ -13,7 +13,7 @@
 import Foundation
 import SwiftUI
 
-struct DOB: CustomStringConvertible {
+struct DOB: CustomStringConvertible, Hashable {
     var description: String {"Date of Birth: \(DOB)"}
     var DOB: DateComponents
     
@@ -37,5 +37,9 @@ struct DOB: CustomStringConvertible {
         // which allows for age calculation.
         let ageDate = Calendar.current.dateComponents([.year], from: birthDate, to: today)
         return ageDate.year ?? 0
+    }
+    
+    func makeDigestible() -> String {
+        return "\(DOB.month ?? 0)/\(DOB.day ?? 0)/\(DOB.year ?? 0)"
     }
 }
