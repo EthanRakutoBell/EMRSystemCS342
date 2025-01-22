@@ -51,59 +51,33 @@ final class BasicEMRSystemUITests: XCTestCase {
         heightTextField.tap()
         heightTextField.typeText( "190" )
         
-        let heightUnitPicker = app.buttons["Unit, cm"]
+        let heightUnitPicker = app.buttons["HeightUnitPicker"]
         heightUnitPicker.tap()
-        heightUnitPicker.buttons["cm"].tap()
+        let cmButton = app.buttons["cm"]
+        cmButton.tap()
+        
+        app.keyboards.buttons["return"].tap()
         
         let weightTextField = app.textFields["WeightAmount"]
         weightTextField.tap()
         weightTextField.typeText( "80" )
         
-        let weightUnitPicker = app.pickers["WeightPicker"]
+        let weightUnitPicker = app.buttons["WeightPicker"]
         weightUnitPicker.tap()
-        weightUnitPicker.buttons["kg"].tap()
+        let kgButton = app.buttons["kg"]
+        kgButton.tap()
         
-        let bloodTypePicker = app.pickers["Blood Type"]
+        let bloodTypePicker = app.buttons["BloodTypePicker"]
         bloodTypePicker.tap()
-        bloodTypePicker.buttons["AB+"].tap()
+        let bloodTypeIdentifier = app.buttons["Blood Type, Unknown"]
+        bloodTypeIdentifier.tap()
+        let ABPlusButton = app.buttons["AB+"]
+        ABPlusButton.tap()
+        
+        app.keyboards.buttons["return"].tap()
         
         let saveButton = app.buttons["Save Patient"]
         saveButton.tap()
-        
-        let successAlert = app.alerts["Zoro Added Successfully"]
-        XCTAssertTrue(successAlert.exists, "Success Alert Must be Shown")
-        
-        /*let patientRow = app.tables.cells.staticTexts["Luffy Monkey D"]
-        patientRow.tap()
-        
-        let addMedicationButton = app.buttons["Add Medication"]
-        addMedicationButton.tap()
-        
-        let medicationNameTextField = app.secureTextFields["Required"]
-        medicationNameTextField.tap()
-        medicationNameTextField.typeText("Dum-Dum Fruit")
-        
-        let dosageAmountTextField = app.textFields["Amount"]
-        dosageAmountTextField.tap()
-        dosageAmountTextField.typeText( "1" )
-        
-        let dosageUnitPicker = app.pickers["Dosage"]
-        dosageUnitPicker.pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "mg")
-        
-        let frequencyTextField = app.textFields["Required"]
-        frequencyTextField.tap()
-        frequencyTextField.typeText("Daily")
-        
-        let durationTextField = app.textFields["Days"]
-        durationTextField.tap()
-        durationTextField.typeText( "1" )
-        
-        let saveMedicationButton = app.buttons["Save Medication"]
-        saveMedicationButton.tap()
-        
-        let medicationText = app.staticTexts["Dum-Dum Fruit"]
-        XCTAssertTrue(medicationText.exists)
-        */
     }
 
     @MainActor

@@ -17,9 +17,9 @@ struct AddPatientView: View {
     @State var patientLastName: String = ""
     @State var patientDOB: DateComponents = Calendar.current.dateComponents([.year, .month, .day], from: Date())
     @State var patientHeightInt = 0.0
-    @State var patientHeightUnit: HeightWeight.UnitEnum = .cm
+    @State var patientHeightUnit: HeightWeight.UnitEnum = .unknown
     @State var patientWeightInt = 0.0
-    @State var patientWeightUnit: HeightWeight.UnitEnum = .kg
+    @State var patientWeightUnit: HeightWeight.UnitEnum = .unknown
     @State var patientBloodType = BloodType()
     @State private var displayMessage: Bool = false
     @State private var errorMessage: String = ""
@@ -76,6 +76,7 @@ struct AddPatientView: View {
                             Picker("Unit", selection: $patientHeightUnit) {
                                 Text("cm").tag(HeightWeight.UnitEnum.cm)
                                 Text("ft/in").tag(HeightWeight.UnitEnum.ftinch)
+                                Text("Unknown").tag(HeightWeight.UnitEnum.unknown)
                                 }
                             .pickerStyle(DefaultPickerStyle())
                             .accessibilityIdentifier("HeightUnitPicker")
@@ -94,6 +95,7 @@ struct AddPatientView: View {
                             Picker("Unit", selection: $patientWeightUnit) {
                                 Text("kg").tag(HeightWeight.UnitEnum.kg)
                                 Text("lbs").tag(HeightWeight.UnitEnum.lbs)
+                                Text("Unknown").tag(HeightWeight.UnitEnum.unknown)
                                 }
                             .pickerStyle(DefaultPickerStyle())
                             .accessibilityIdentifier("WeightPicker")
@@ -113,6 +115,7 @@ struct AddPatientView: View {
                             Text("Unknown").tag(BloodType.typeBloodEnum.unknown)
                         }
                         .pickerStyle(MenuPickerStyle())
+                        .accessibilityIdentifier("BloodTypePicker")
                     }
             }
             NavigationLink(
