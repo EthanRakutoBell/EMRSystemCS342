@@ -13,17 +13,25 @@ import Foundation
 import SwiftUI
 
 struct BloodType: CustomStringConvertible, Hashable {
-    var description: String { "Blood Type: \(typeBlood)" }
-    var typeBlood: String
+    var typeBlood: typeBloodEnum
+    var description: String {
+        "Blood Type: \(typeBlood)"
+    }
     
-    init(typeBlood: String = "Unknown") {
-        // Only sets blood type if it is on the list of valid blood types
-        if typeBlood == "A+"||typeBlood == "B+"||typeBlood == "O+"||typeBlood == "AB+" || typeBlood == "A-"||typeBlood == "B-"||typeBlood == "O-"||typeBlood == "AB-" {
-            self.typeBlood = typeBlood
-        // otherwise sets as "invalid"
-        } else {
-            print("Invalid Blood Type")
-            self.typeBlood = "Invalid"
-        }
+    // recreated bloodtype struct to include enum
+    enum typeBloodEnum: String {
+        case APlus = "A+"
+        case AMinus = "A-"
+        case BPlus = "B+"
+        case BMinus = "B-"
+        case OPlus = "O+"
+        case OMinus = "O-"
+        case ABPlus = "AB+"
+        case ABMinus = "AB-"
+        case unknown = "Unknown"
+    }
+    
+    init(typeBlood: typeBloodEnum = .unknown) {
+        self.typeBlood = typeBlood
     }
 }

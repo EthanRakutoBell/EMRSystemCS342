@@ -19,14 +19,14 @@ struct Medication: CustomStringConvertible, Hashable {
         return "\(name) - \(datePrescribed) - \(dosage) - \(route) - \(frequency) - \(duration) days"
     }
     // DateComponents data type used here originally to help with age calculation
-    var datePrescribed: DateComponents
-    var name: String
-    var dosage: String
-    var route: String
-    var frequency: String
-    var duration: Int
+    let datePrescribed: DateComponents
+    let name: String
+    let dosage: Dosage
+    let route: routeEnum
+    let frequency: String
+    let duration: Int
     
-    init(datePrescribed: DateComponents = DateComponents(year: 0000, month: 00, day: 00), name: String = "Unknown", dosage: String = "Unknown", route: String = "Unknown", frequency: String = "Unknown", duration: Int = 0) {
+    init(datePrescribed: DateComponents = DateComponents(year: 0000, month: 00, day: 00), name: String = "Unknown", dosage: Dosage, route: routeEnum = .unknown, frequency: String = "Unknown", duration: Int = 0) {
         self.datePrescribed = datePrescribed
         self.name = name
         self.dosage = dosage
@@ -35,20 +35,35 @@ struct Medication: CustomStringConvertible, Hashable {
         self.duration = duration
     }
     
+    enum routeEnum: String {
+        case oral = "Oral"
+        case iv = "IV"
+        case intramusc = "Intramuscular"
+        case subcutaneous = "Subcutaneous"
+        case intradermal = "Intradermal"
+        case inhalation = "Inhalation"
+        case sublingual = "Sublingual"
+        case rectal = "Rectal"
+        case topical = "Topical"
+        case otic = "Otic"
+        case opthalmic = "Opthalmic"
+        case unknown = "Unknown"
+    }
+    
     // This function determines when a medication cycle has been completed
-    func calculateCompleted() -> Int {
+    func calculateCompleted() -> Bool {
         guard let datePrescribed = Calendar.current.date(from: datePrescribed) else {
             print("Invalid Date")
-            return 0
+            return false
         }
         let today = Date()
         // daysBetween takes the current day compared to the current day
         let daysBetween = Calendar.current.dateComponents([.day], from: datePrescribed, to: today).day!
         // if it is larger than the duration, the medication has been completed
         if daysBetween >= duration {
-            return 1
+            return true
         } else {
-            return 0
+            return false
         }
     }
     

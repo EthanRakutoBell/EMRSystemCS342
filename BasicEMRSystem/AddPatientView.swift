@@ -78,7 +78,7 @@ struct AddPatientView: View {
                                 Text("ft/in").tag(HeightWeight.UnitEnum.ftinch)
                                 }
                             .pickerStyle(DefaultPickerStyle())
-                            .accessibilityIdentifier("HeightPicker")
+                            .accessibilityIdentifier("HeightUnitPicker")
                         }
                     }
                 Section(header: Text("Weight")

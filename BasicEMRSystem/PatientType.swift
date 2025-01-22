@@ -18,64 +18,103 @@ import SwiftUI
 
 // Used for throwing errors
 enum MedicationError: Error {
-    case Invalid
     case Duplicate
 }
 
+enum dateofBirthError: Error {
+    case Invalid
+    case FutureDate
+}
 
 
-struct Patient: Identifiable, Hashable, CustomStringConvertible {
-    let id = UUID()
-    var description: String {
-        return "MRN: \(MRN), First Name: \(firstName), Last Name: \(lastName), DOB: \(DOB), Height: \(height), Weight: \(weight), Blood Type: \(bloodType.typeBlood), Medications: \(medications)"
-    }
-    var MRN: Int
-    var firstName: String
-    var lastName: String
-    var DOB: DOB
-    var height: Int
-    var weight: Int
-    var bloodType: BloodType
-    var medications: [Medication]
-    
-    init(description: String = "", MRN: Int = 0, firstName: String = "Unknown", lastName: String = "Unknown", DOB: DOB, height: Int = 0, weight: Int = 0, bloodType: BloodType, medications: [Medication] = []) {
-        self.MRN = Int.random(in: 10000...99999)
-        self.firstName = firstName
-        self.lastName = lastName
-        self.DOB = DOB
-        self.height = height
-        self.weight = weight
-        self.bloodType = bloodType
-        self.medications = medications
-    }
+    struct Patient: Identifiable, Hashable, CustomStringConvertible {
+        let id = UUID()
+        var description: String {
+            return "MRN: \(MRN), First Name: \(firstName), Last Name: \(lastName), Date of Birth: \(dateOfBirth), Height: \(height), Weight: \(weight), Blood Type: \(bloodType?.typeBlood.rawValue ?? "Unknown"), Medications: \(medications)"
+        }
+        var MRN = UUID()
+        let firstName: String
+        let lastName: String
+        let dateOfBirth: DateComponents
+        let height: HeightWeight
+        let weight: HeightWeight
+        let bloodType: BloodType?
+        var medications: [Medication]
+        
+        init(firstName: String, lastName: String, dateOfBirth: DateComponents = Calendar.current.dateComponents([.year, .month, .day], from: Date()), height: HeightWeight, weight: HeightWeight, bloodType: BloodType? = nil, medications: [Medication] = []) {
+            self.firstName = firstName
+            self.lastName = lastName
+            self.dateOfBirth = dateOfBirth
+            self.height = height
+            self.weight = weight
+            self.bloodType = bloodType ?? BloodType()
+            self.medications = medications
+        }
     
     func calculateInitials() -> String {
         let firstInitial = firstName.first?.uppercased() ?? "?"
         let lastInitial = lastName.first?.uppercased() ?? "?"
         return "\(firstInitial)\(lastInitial)"
     }
+        
+        
+    // moved dateOfBirth out of its own struct and into Patient
+    func calculateAge() throws -> Int {
+        guard let birthDate = Calendar.current.date(from: dateOfBirth) else {
+            throw dateofBirthError.Invalid
+        }
+        let today = Date()
+        if birthDate > today {
+            throw dateofBirthError.FutureDate
+        }
+        // takes in the year difference between the birthdate and todays date,
+        // which allows for age calculation.
+        let ageDate = Calendar.current.dateComponents([.year, .month, .day], from: birthDate, to: today)
+        if let ageYear = ageDate.year, let ageMonth = ageDate.month, let ageDay = ageDate.day {
+            if ageMonth < 0 || ageMonth == 0 && ageDay < 0 {
+                return ageYear - 1
+            } else {
+                return ageYear
+            }
+        }
+        return 0
+    }
+    
+    func makeDigestible() -> String {
+        return "\(dateOfBirth.month ?? 0)/\(dateOfBirth.day ?? 0)/\(dateOfBirth.year ?? 0)"
+    }
     
     // This function returns basic info (Assignment method #1)
     func basicInfo() -> String {
-        return "\(lastName), \(firstName), (\(DOB.calculateAge()) years)"
+        do {
+            let age = try calculateAge()
+            return "\(lastName), \(firstName), (\(age) years)"
+        } catch dateofBirthError.FutureDate {
+            return "\(lastName), \(firstName), (Invalid Birthdate: future date)"
+        } catch dateofBirthError.Invalid {
+            return "\(lastName), \(firstName), (Invalid Birthdate)"
+        } catch {
+            return "\(lastName), \(firstName), (Unknown Error)"
+        }
+
     }
     
     // This function returns expanded basic info
     func allInfo() -> String {
-        return "\(basicInfo()), \(height) cm, \(weight) kg, Blood type: \(bloodType.typeBlood)"
+        return "\(basicInfo()), \(height), \(weight), Blood type: \(bloodType?.typeBlood.rawValue ?? "Unknown")"
     }
     
     // This function returns a sorted list of active medications being taken
     // by the patient (Assignment method #2)
-    func medicationInfo() -> [String] {
+        func medicationInfo() -> [Medication] {
         var medicationList: [Medication] = []
-        var sortedMedication: [String] = []
+        var sortedMedication: [Medication] = []
         if medications.isEmpty {
-            return ["No medications"]
+            return []
         }
         for Medication in medications {
             // Only add to list if the medication cycle is not yet completed
-            if Medication.calculateCompleted() == 0 {
+            if Medication.calculateCompleted() == false {
                 medicationList.append(Medication)
             }
         }
@@ -85,7 +124,7 @@ struct Patient: Identifiable, Hashable, CustomStringConvertible {
         // of each given medication, setting older dates higher. Use of "!" was recommended by XCode, allows for handling the empty case.
         let sortedList = medicationList.sorted(by: { Calendar.current.date(from: $0.datePrescribed)! < Calendar.current.date(from:$1.datePrescribed)! })
         for Medication in sortedList {
-            sortedMedication.append("\(Medication.name) (Prescribed on \(Medication.datePrescribed))")
+            sortedMedication.append(Medication)
         }
         print(sortedMedication)
         return sortedMedication
@@ -117,47 +156,47 @@ struct Patient: Identifiable, Hashable, CustomStringConvertible {
     
     // This function returns the blood type of the patient
     func bloodTypeInfo() -> String {
-        return "\(firstName) \(lastName)'s blood type is: \(bloodType.typeBlood)"
+        return "\(firstName) \(lastName)'s blood type is: \(bloodType?.typeBlood.rawValue ?? "Unknown")"
     }
     
     // This function returns compatible blood types for
     // the patient (Bonus method)
     func compatibleBloodType() -> [String] {
         var compatibleTypes: [String] = []
-        if bloodType.typeBlood == "O-" {
+        if bloodType?.typeBlood.rawValue == "O-" {
             compatibleTypes.append("O-")
         }
-        if bloodType.typeBlood == "O+" {
+        if bloodType?.typeBlood.rawValue == "O+" {
             compatibleTypes.append("O-")
             compatibleTypes.append("O+")
         }
-        if bloodType.typeBlood == "B-" {
+        if bloodType?.typeBlood.rawValue == "B-" {
             compatibleTypes.append("O-")
             compatibleTypes.append("B-")
         }
-        if bloodType.typeBlood == "B+" {
+        if bloodType?.typeBlood.rawValue == "B+" {
             compatibleTypes.append("O-")
             compatibleTypes.append("O+")
             compatibleTypes.append("B-")
             compatibleTypes.append("B+")
         }
-        if bloodType.typeBlood == "A-" {
+        if bloodType?.typeBlood.rawValue == "A-" {
             compatibleTypes.append("O-")
             compatibleTypes.append("A-")
         }
-        if bloodType.typeBlood == "A+" {
+        if bloodType?.typeBlood.rawValue == "A+" {
             compatibleTypes.append("O-")
             compatibleTypes.append("O+")
             compatibleTypes.append("A-")
             compatibleTypes.append("A+")
         }
-        if bloodType.typeBlood == ("AB-") {
+        if bloodType?.typeBlood.rawValue == ("AB-") {
             compatibleTypes.append("O-")
             compatibleTypes.append("B-")
             compatibleTypes.append("A-")
             compatibleTypes.append("AB-")
         }
-        if bloodType.typeBlood == ("AB+") {
+        if bloodType?.typeBlood.rawValue == ("AB+") {
             compatibleTypes.append("O-")
             compatibleTypes.append("O+")
             compatibleTypes.append("B-")
@@ -176,7 +215,7 @@ struct Patient: Identifiable, Hashable, CustomStringConvertible {
         var completedList: [String] = []
         for medication in medications {
             // only add to array if it is completed
-            if medication.calculateCompleted() == 1 {
+            if medication.calculateCompleted() == true {
                 completedList.append("\(medication.name), Completed on \(medication.calculateCompletedDay())")
             }
         }
