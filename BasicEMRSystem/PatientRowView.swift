@@ -9,12 +9,12 @@ import SwiftUI
 
 // Created to break up PatientListView for the compiler
 struct PatientRowView: View {
-    let patient: Binding<Patient>
+    @Binding var patient: Patient
     
     var body: some View {
         HStack {
             // This creates an aesthetically pleasing "profile picture" for the patient
-            Text(patient.wrappedValue.calculateInitials())
+            Text(patient.calculateInitials())
                 .font(.system(size: 30) .bold())
                 .foregroundColor(.black)
                 .padding(12)
@@ -26,13 +26,13 @@ struct PatientRowView: View {
             // using wrappedValue since the patient variable is Binding<patient>
             Spacer().frame(width: 20)
             VStack(alignment: .leading) {
-                Text("\(patient.wrappedValue.firstName) \(patient.wrappedValue.lastName)")
+                Text("\(patient.firstName) \(patient.lastName)")
                     .font(.headline)
                 
-                Text("\(ageResult(for: patient.wrappedValue))")
+                Text("\(ageResult(for: patient))")
                     .font(.subheadline)
                 
-                Text("MRN: \(patient.MRN.wrappedValue)")
+                Text("MRN: \(patient.MRN.uuidString)")
                     .font(.system(size: 8))
             }
         }

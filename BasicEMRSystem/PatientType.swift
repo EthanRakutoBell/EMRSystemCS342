@@ -32,7 +32,7 @@ enum dateofBirthError: Error {
         var description: String {
             return "MRN: \(MRN), First Name: \(firstName), Last Name: \(lastName), Date of Birth: \(dateOfBirth), Height: \(height), Weight: \(weight), Blood Type: \(bloodType?.typeBlood.rawValue ?? "Unknown"), Medications: \(medications)"
         }
-        var MRN = UUID()
+        let MRN: UUID
         let firstName: String
         let lastName: String
         let dateOfBirth: DateComponents
@@ -42,6 +42,7 @@ enum dateofBirthError: Error {
         var medications: [Medication]
         
         init(firstName: String, lastName: String, dateOfBirth: DateComponents = Calendar.current.dateComponents([.year, .month, .day], from: Date()), height: HeightWeight, weight: HeightWeight, bloodType: BloodType? = nil, medications: [Medication] = []) {
+            self.MRN = UUID()
             self.firstName = firstName
             self.lastName = lastName
             self.dateOfBirth = dateOfBirth

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddPatientView: View {
-    @Bindable var patientList = PatientList()
+    @ObservedObject var patientList = PatientList()
     // dismiss pops a view from the navigation stack, allows for easy return
     @Environment(\.dismiss) private var dismiss
     
@@ -131,6 +131,9 @@ struct AddPatientView: View {
                             // append to both patients and filtered patients- solution to a bug in which either one of the lists was not being updated and so new patients weren't being displayed
                             patientList.patients.append(newPatient)
                             patientList.filteredPatients.append(newPatient)
+                            
+                            print("total patients: \(patientList.patients.count)")
+                            
                             // sort new patients by last name here
                             patientList.patients.sort { $0.lastName < $1.lastName }
                             patientList.filteredPatients.sort { $0.lastName < $1.lastName }

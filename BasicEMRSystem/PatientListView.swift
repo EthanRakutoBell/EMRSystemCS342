@@ -10,13 +10,17 @@ import SwiftUI
 // Dummy patient and medication
 let Medication1 = Medication(datePrescribed: DateComponents(year: 2024, month: 12, day: 18), name: "Gum-Gum Fruit", dosage: Dosage(value: 5, unit: Dosage.UnitEnum.mg), route: Medication.routeEnum.oral, frequency: "Once", duration: 1)
 
-@Observable
-class PatientList {
-    var patients: [Patient] = [
+//@Observable
+// edit: upon building the application, the dynamic functionality only worked in preview mode.
+// Thus, to fix this problem, reverted back to old usage of ObservableObject class and @Published
+// as this appeared to work upon launching the app
+class PatientList: ObservableObject {
+    @Published var patients: [Patient] = [
         Patient(firstName: "Luffy", lastName: "Monkey D", dateOfBirth: DateComponents(year: 1999, month: 11, day: 8), height: HeightWeight(value: 180, unit: HeightWeight.UnitEnum.cm), weight: HeightWeight(value: 70, unit: HeightWeight.UnitEnum.kg), bloodType: BloodType(typeBlood: BloodType.typeBloodEnum(rawValue: "O+") ?? .OPlus), medications: [Medication1])
     ]
     // Separate patient list for the search query
-    var filteredPatients: [Patient] = []
+    // edit: used @Published
+    @Published var filteredPatients: [Patient] = []
     
     // Since all edits are being made to the filtered list, this updates the original patient list
     func fixPatientList() {
@@ -35,18 +39,20 @@ class PatientList {
 }
 
 struct PatientListView: View {
-    @Bindable var patientList = PatientList()
+    // Used ObservedObject over @Bindable here- simply had to test the old method as @Bindable
+    // did not appear to update patientList within the app launch and only within preview
+    @ObservedObject var patientList = PatientList()
     @State private var searchText = ""
     var body: some View {
             NavigationStack {
                 List {
-                    ForEach($patientList.filteredPatients) { patientBinding in
+                    ForEach($patientList.filteredPatients) { patient in
                         NavigationLink(
                             destination: {
-                                PatientDetailView(patient: patientBinding)
+                                PatientDetailView(patient: patient)
                             },
                             label: {
-                                PatientRowView(patient: patientBinding)
+                                PatientRowView(patient: patient)
                             }
                         )
                     }
